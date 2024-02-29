@@ -1,0 +1,112 @@
+
+Note: Install ConceptX to user's work using micromamba
+
+last update 2023-11-10
+
+
+#Keys:
+####################################
+#1.add "perl" into env_clustering.yml & env_neurox.yml 
+
+the whole pipeline will not depend on perl from host, and easily fix the issue from 
+perl.
+
+user can activate env_clustering.yml or env_neurox.yml  for perl processing step.
+
+#2. modify getclusters.sh to use perl from micromamba env: clustering or neurox.
+
+update  getclusters.sh to use the whole path for scripts in stead of relative paths
+so user can run the script getclusters.sh in any locations , and modify
+the input data for their own run.
+
+ 
+#Install ConceptX on pronto or nova using micromamba
+####################################
+
+#1. on head node of pronto or nova, allocate compute node with 4 CPUs.
+$ srun -N1 -n4 -t4:0:0 --pty bash
+
+#2. on compute, install ConceptX in your work dir
+$ cd /to/your/proj/dir/
+
+# env will be created in $PWD/micromamba/envs
+$ mkdir micromamba, define MAMBA_ROOT_PREFIX
+$ export  MAMBA_ROOT_PREFIX=/work/las-research/xfzhao/test/conceptx/micromamba
+
+#download ConceptX and add perl to env yml files
+$ module purge
+$ module load git
+$ git clone https://github.com/hsajjad/ConceptX
+
+#for using the full paths for their scripts in your own script.
+#set CONCEPTX_ROOT=$PWD/ConceptX
+
+$export CONCEPTX_ROOT=/work/las-research/xfzhao/test/conceptx/ConceptX/
+$ cd $CONCEPTX_ROOT          # or cd ./ConceptX
+$ ls
+
+#modify their yml files to install perl into env as well.
+#otherwise, their pipleline getclusters.sh has issues
+#when using perl to  pre-process the input data files.
+
+#env_clustering.yml:
+#replace their last line "prefix: /export/work/hsajjad/software/anaconda/envs/clustering"
+#with "- perl"
+
+$ cp env_clustering.yml env_clustering.yml.save
+$ sed -i "s/prefix:.*/  - perl/g" env_clustering.yml
+$ diff env_clustering.yml env_clustering.yml.save
+
+#env_neurox.yml:
+#replace their last line "prefix: /export/work/hsajjad/software/anaconda/envs/neurox"
+#with "- perl"
+
+$ cp env_neurox.yml env_neurox.yml.save
+$ sed -i "s/prefix:.*/  - perl/g" env_neurox.yml
+$ diff env_neurox.yml env_neurox.yml.save
+
+#create envs
+$ module purge 
+$ module load micromamba
+
+#as 2022-11-10, on their web page https://github.com/hsajjad/ConceptX
+#1. the two yml files do not match those files in their source code.
+#2. env name for env_neurox.yml is "neurox_pip"
+
+# use yml files from their source code: env_neurox.yml & env_clustering.yml
+
+#env name: neurox_pip, defined in the yml file
+#python : 3.8.13
+
+$ micromamba env create -y  --file=env_neurox.yml
+$ eval "$(micromamba shell hook --shell=bash)"
+$ micromamba activate neurox_pip
+$ which perl    # /to/yoour/project/micromamba/envs/neurox_pip/bin/python
+$ which python  # v3.8.13
+$ micromamba deactivate 
+
+
+#env name: clustering
+#python: 3.6.13
+$ micromamba env create -y  --file=env_clustering.yml
+$ micromamba activate clustering
+$ which perl    # /to/yoour/project/micromamba/envs/clustering/bin/python
+$ which python  # v3.6.13
+$ micromamba deactivate 
+
+#now run their demo data using their script .//ConceptX/get_clusters/getclusters.sh
+
+#i attach the modified getclusters.sh.micromamba for using micromamba
+
+
+
+
+
+
+
+
+
+
+
+
+
