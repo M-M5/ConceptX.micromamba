@@ -6,11 +6,11 @@ module purge
 module load micromamba
 
 #where micromamba env is, change to your installation 
-export  MAMBA_ROOT_PREFIX=/work/las-research/xfzhao/test/conceptx/micromamba
+export  MAMBA_ROOT_PREFIX=$PWD/ConceptX_micromamba/micromamba
 
 #for using the full paths for all ConceptX scripts
 #change it to your installation
-export CONCEPTX_ROOT=/work/las-research/xfzhao/test/conceptx/ConceptX/
+export CONCEPTX_ROOT=$PWD/ConceptX_micromamba/ConceptX
 
 #activate neutox_pip for data pre-processing  useing perl and python
 eval "$(micromamba shell hook --shell=bash)"
