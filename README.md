@@ -10,4 +10,4 @@ This repo is a fork of ConceptX configured to be installed with Micromamba. Inst
 - Run setup.sh script
   $ sh setup.sh
 
-- Run getclusters.sh.micromamba (WIP, will require slight editing of directories)
+- Run getclusters.sh.micromamba
